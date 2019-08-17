@@ -26,7 +26,7 @@ data = read_excel(
         'arrears_status_description': 'category',
         'stage': CategoricalDtype(categories=[1, 2, 3], ordered=True),
         'industry': 'category',
-        'deal_type_code': 'category',
+        'product_type': 'category',
         'balance': float,
         'authorised_amount': float,
         'security_value': float,
@@ -40,22 +40,21 @@ data = read_excel(
 """
 Exposure over time per product
 """
-result = data.groupby(['period', 'deal_type_code'])['balance'].sum()
-ex.area(result.reset_index(), x='period', y='balance', color='deal_type_code').show()
+result = data.groupby(['period', 'product_type'])['balance'].sum()
+ex.area(result.reset_index(), x='period', y='balance', color='product_type').show()
 
-ex.
 """
 Stage distribution over time per product
 Number of accounts &
 Balance as a proportion of total
 """
-result = data.groupby(['period', 'deal_type_code', 'stage'])['balance'].count().rename('count')
-ex.line(result.reset_index(), x='period', y='count', color='deal_type_code', line_group='deal_type_code', line_dash='stage', height=900).show()
+result = data.groupby(['period', 'product_type', 'stage'])['balance'].count().rename('count')
+ex.line(result.reset_index(), x='period', y='count', color='product_type', line_group='product_type', line_dash='stage', height=900).show()
 
 
-result = data.groupby(['period', 'deal_type_code', 'stage'])['balance'].sum()
-result = (result / result.groupby(['period', 'deal_type_code']).sum())
-ex.area(result.reset_index(), x='period', y='balance', color='stage', facet_row='deal_type_code', height=8*450, range_y=[0, 1]).show()
+result = data.groupby(['period', 'product_type', 'stage'])['balance'].sum()
+result = (result / result.groupby(['period', 'product_type']).sum())
+ex.area(result.reset_index(), x='period', y='balance', color='stage', facet_row='product_type', height=8*450, range_y=[0, 1]).show()
 
 
 
@@ -99,8 +98,8 @@ roll_rates(data=data, column='stage')\
 Roll rates using the *args argument
 Roll rates per product type
 """
-rr = roll_rates('deal_type_code', data=data, column='stage')
-rr.pivot_table(index=['deal_type_code', 'stage'], columns='to_stage')
+rr = roll_rates('product_type', data=data, column='stage')
+rr.pivot_table(index=['product_type', 'stage'], columns='to_stage')
 
 
 """
@@ -122,5 +121,5 @@ rr.pivot_table(index=['age_bucket', 'stage'], columns='to_stage')
 Roll rates using the *args argument
 roll rates per product and age bucket
 """
-rr = roll_rates('deal_type_code', 'age_bucket', data=data, column='stage')
-rr.pivot_table(index=['deal_type_code', 'age_bucket', 'stage'], columns='to_stage').to_excel('./results/tm.xlsx')
+rr = roll_rates('product_type', 'age_bucket', data=data, column='stage')
+rr.pivot_table(index=['product_type', 'age_bucket', 'stage'], columns='to_stage').to_excel('./results/tm.xlsx')
